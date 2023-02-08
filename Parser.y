@@ -11,7 +11,11 @@ import Lexer
 %token
     num         { TokenNum $$ }
     '+'         { TokenAdd }
+    '*'         { TokenMul }
+    '-'         { TokenSub }
     "&&"        { TokenAnd }
+    "||"        { TokenOr }
+    '!'         { TokenNeg }
     "=="        { TokenEq }
     true        { TokenTrue }
     false       { TokenFalse }
@@ -40,7 +44,11 @@ Exp     : num                        { Num $1 }
         | false                      { BFalse }
         | true                       { BTrue }
         | Exp '+' Exp                { Add $1 $3 }
+        | Exp '*' Exp                { Mul $1 $3 }
+        | Exp '-' Exp                { Sub $1 $3 }
         | Exp "&&" Exp               { And $1 $3 }
+        | Exp "||" Exp               { Or $1 $3 }
+        | '!' Exp                    { Neg $2 }
         | if Exp then Exp else Exp   { If $2 $4 $6 }
         | '\\' var ':' Type "->" Exp { Lam $2 $4 $6 }
         | Exp Exp                    { App $1 $2 }

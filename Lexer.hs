@@ -12,12 +12,16 @@ data Expr = BTrue
           | Num Int 
           | Add Expr Expr 
           | And Expr Expr 
+          | Or Expr Expr 
+          | Neg Expr  
           | If Expr Expr Expr 
           | Var String
           | Lam String Ty Expr 
           | App Expr Expr 
           | Paren Expr
           | Eq Expr Expr
+          | Mul Expr Expr
+          | Sub Expr Expr
           deriving (Show, Eq)
 
 data Token = TokenTrue 
@@ -25,6 +29,8 @@ data Token = TokenTrue
            | TokenNum Int 
            | TokenAdd 
            | TokenAnd
+           | TokenOr
+           | TokenNeg
            | TokenIf 
            | TokenThen
            | TokenElse 
@@ -37,6 +43,8 @@ data Token = TokenTrue
            | TokenBoolean
            | TokenNumber
            | TokenEq
+           | TokenMul
+           | TokenSub
            deriving Show 
 
 isToken :: Char -> Bool
@@ -45,6 +53,8 @@ isToken c = elem c "->&|="
 lexer :: String -> [Token]
 lexer [] = [] 
 lexer ('+':cs) = TokenAdd : lexer cs 
+lexer ('*':cs) = TokenMul : lexer cs 
+lexer ('!':cs) = TokenNeg : lexer cs 
 lexer ('\\':cs) = TokenLam : lexer cs
 lexer (':':cs) = TokenColon : lexer cs
 lexer ('(':cs) = TokenLParen : lexer cs
@@ -74,5 +84,7 @@ lexSymbol :: String -> [Token]
 lexSymbol cs = case span isToken cs of
                    ("->", rest) -> TokenArrow  : lexer rest
                    ("&&", rest) -> TokenAnd    : lexer rest
+                   ("||", rest) -> TokenOr    : lexer rest
                    ("==", rest) -> TokenEq     : lexer rest
+                   ("-", rest) -> TokenSub     : lexer rest
                    _ -> error "Lexical error: símbolo inválido!"
