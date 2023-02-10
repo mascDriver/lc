@@ -22,8 +22,16 @@ data Expr = BTrue
           | Eq Expr Expr
           | Mul Expr Expr
           | Sub Expr Expr
+          | Gt Expr Expr
+          | Lt Expr Expr
           deriving (Show, Eq)
 
+instance Ord Expr where
+    compare (Num x) (Num y) = compare x y
+    compare (BTrue) (BTrue) = EQ
+    compare (BFalse) (BFalse) = EQ
+    compare _ _ = error "cannot compare expressions other than numbers and booleans"
+    
 data Token = TokenTrue 
            | TokenFalse 
            | TokenNum Int 
@@ -45,6 +53,8 @@ data Token = TokenTrue
            | TokenEq
            | TokenMul
            | TokenSub
+           | TokenGt
+           | TokenLt
            deriving Show 
 
 isToken :: Char -> Bool
@@ -59,6 +69,8 @@ lexer ('\\':cs) = TokenLam : lexer cs
 lexer (':':cs) = TokenColon : lexer cs
 lexer ('(':cs) = TokenLParen : lexer cs
 lexer (')':cs) = TokenRParen : lexer cs
+lexer ('>':cs) = TokenGt : lexer cs
+lexer ('<':cs) = TokenLt : lexer cs
 lexer (c:cs) | isSpace c = lexer cs 
              | isDigit c = lexNum (c:cs)
              | isAlpha c = lexKW (c:cs)

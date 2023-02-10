@@ -50,6 +50,18 @@ typeof ctx (Eq e1 e2) = case (typeof ctx e1, typeof ctx e2) of
                                                 else 
                                                   Nothing
                           _                  -> Nothing
+typeof ctx (Gt e1 e2) = case (typeof ctx e1, typeof ctx e2) of 
+                          (Just t1, Just t2) -> if t1 == t2 then
+                                                  Just TBool
+                                                else 
+                                                  Nothing
+                          _                  -> Nothing
+typeof ctx (Lt e1 e2) = case (typeof ctx e1, typeof ctx e2) of 
+                          (Just t1, Just t2) -> if t1 == t2 then
+                                                  Just TBool
+                                                else 
+                                                  Nothing
+                          _                  -> Nothing
 typeof ctx (Paren e) = typeof ctx e 
 
 

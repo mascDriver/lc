@@ -17,6 +17,8 @@ import Lexer
     "||"        { TokenOr }
     '!'         { TokenNeg }
     "=="        { TokenEq }
+    '>'         { TokenGt }
+    '<'         { TokenLt }
     true        { TokenTrue }
     false       { TokenFalse }
     if          { TokenIf }
@@ -54,6 +56,8 @@ Exp     : num                        { Num $1 }
         | Exp Exp                    { App $1 $2 }
         | '(' Exp ')'                { Paren $2 }
         | Exp "==" Exp               { Eq $1 $3 }
+        | Exp '>' Exp                { Gt $1 $3 }
+        | Exp '<' Exp                { Lt $1 $3 }
 
 Type    : Bool                       { TBool }
         | Number                     { TNum }

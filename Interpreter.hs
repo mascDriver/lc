@@ -18,6 +18,8 @@ subst x n (Neg e1 ) = Neg (subst x n e1)
 subst x n (If e e1 e2) = If (subst x n e) (subst x n e1) (subst x n e2)
 subst x n (Paren e) = Paren (subst x n e)
 subst x n (Eq e1 e2) = Eq (subst x n e1) (subst x n e2)
+subst x n (Gt e1 e2) = Gt (subst x n e1) (subst x n e2)
+subst x n (Lt e1 e2) = Lt (subst x n e1) (subst x n e2)
 subst x n e = e 
 
 isvalue :: Expr -> Bool 
@@ -91,6 +93,28 @@ step (Eq e1 e2) | isvalue e1 && isvalue e2 = if (e1 == e2) then
                                  _        -> Nothing
                 | otherwise = case step e1 of 
                                 Just e1' -> Just (Eq e1' e2)
+                                _        -> Nothing 
+
+step (Gt e1 e2) | isvalue e1 && isvalue e2 = if (e1 > e2) then
+                                               Just BTrue 
+                                             else 
+                                               Just BFalse 
+                | isvalue e1 = case step e2 of 
+                                 Just e2' -> Just (Gt e1 e2')
+                                 _        -> Nothing
+                | otherwise = case step e1 of 
+                                Just e1' -> Just (Gt e1' e2)
+                                _        -> Nothing
+
+step (Lt e1 e2) | isvalue e1 && isvalue e2 = if (e1 < e2) then
+                                               Just BTrue 
+                                             else 
+                                               Just BFalse 
+                | isvalue e1 = case step e2 of 
+                                 Just e2' -> Just (Lt e1 e2')
+                                 _        -> Nothing
+                | otherwise = case step e1 of 
+                                Just e1' -> Just (Lt e1' e2)
                                 _        -> Nothing 
 step e = Just e 
 
