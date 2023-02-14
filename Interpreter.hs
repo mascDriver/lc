@@ -8,6 +8,7 @@ subst x n b@(Var v) = if v == x then
                       else 
                         b 
 subst x n (Lam v t b) = Lam v t (subst x n b)
+subst x n (Let v e1 e2) = Let v (subst x n e1) (subst x n e2)
 subst x n (App e1 e2) = App (subst x n e1) (subst x n e2)
 subst x n (Add e1 e2) = Add (subst x n e1) (subst x n e2)
 subst x n (Mul e1 e2) = Mul (subst x n e1) (subst x n e2)
@@ -80,6 +81,12 @@ step (App e1@(Lam x t b) e2) | isvalue e2 = Just (subst x e2 b)
                              | otherwise = case step e2 of 
                                              Just e2' -> Just (App e1 e2')
                                              _        -> Nothing 
+                                             
+step (Let x e1 e2)           | isvalue e1 = Just (subst x e1 e2)
+                             | otherwise = case step e1 of 
+                                             Just e1' -> Just (Let x e1' e2)
+                                             _        -> Nothing 
+
 step (App e1 e2) = case step e1 of 
                      Just e1' -> Just (App e1' e2)
                      _        -> Nothing
